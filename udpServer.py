@@ -27,7 +27,7 @@ serviceHost = "127.0.0.1"
 servicePort = 3310
 
 # Maximum client request size, in bytes
-MSG_SIZE = 16       # Do not copy this
+MSG_SIZE = 40       # Do not copy this
 
 
 def serverLoop(host, port):
@@ -58,15 +58,21 @@ def readRequest(sock):
     # Internet programs should decode network data as soon as received.
     # The backslashreplace is because we don't want to crash if it isn't UTF-8.
     inMessage = inData.decode('utf-8', 'backslashreplace')
-    print("Server received from", sender, "request", inMessage)
+    if  inMessage == "it": print("Server received a special message from", sender, "request", inMessage)
+    else: print("Server received from", sender, "request", inMessage)
     return inMessage, sender
 
 def replyToMessage(sock, message, sender):
     """Generate reply to message"""
     # TODO: change behaviour depending on message
-    reply = "ACK " + message
-    print("Server sending reply", reply)
-    sendReply(sock, reply, sender)
+    if message != "it":
+        reply = "ACK " + message
+
+        num = 1 if message != "ni" else 3
+        while num > 0:
+            print("Server sending reply", reply)
+            sendReply(sock, reply, sender)
+            num -= 1
 
 def sendReply(sock, reply, sender):
     """Send complete reply to client"""
